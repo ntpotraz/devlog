@@ -20,13 +20,13 @@ func main() {
 		log.Fatal("PORT is not set")
 	}
 
-	static := os.Getenv("STATIC")
-	if _, err := os.Stat(static); os.IsNotExist(err) {
-		log.Fatalf("Static files directory does not exist: %v", err)
+	dist := os.Getenv("DIST")
+	if _, err := os.Stat(dist); os.IsNotExist(err) {
+		log.Fatalf("Dist files directory does not exist: %v", err)
 	}
 
 	mux := http.NewServeMux()
-	fileServer := http.FileServer(http.Dir(static))
+	fileServer := http.FileServer(http.Dir(dist))
 
 	mux.Handle("/", fileServer)
 	mux.HandleFunc("/health", handleHealthCheck)
