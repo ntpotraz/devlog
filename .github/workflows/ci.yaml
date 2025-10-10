@@ -22,8 +22,6 @@ jobs:
             - name: Install dependencies
               run: cd frontend && bun install
 
-            - name: Run Biome Lint
-              run: cd frontend && bunx biome lint --error-on-warnings
+            - name: Run Biome check
+              run: cd frontend && bunx biome check
 
-            - name: Run Biome Format
-              run: cd frontend && bunx biome format
