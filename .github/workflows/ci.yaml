@@ -23,7 +23,7 @@ jobs:
               run: cd frontend && bun install
 
             - name: Run Biome Lint
-              run: cd frontend && bunx biome lint
+              run: cd frontend && bunx biome lint --error-on-warning
 
             - name: Run Biome Format
               run: cd frontend && bunx biome format
