@@ -1,8 +1,8 @@
 # Build stage
 FROM oven/bun:1 AS frontend-builder
 WORKDIR /app
-COPY frontend/ ./frontend/
-RUN cd frontend && bun install && bun run build
+COPY . .
+RUN bun install && bun run build
 
 # Go build stage
 FROM golang:1.24-alpine AS go-builder
@@ -15,10 +15,10 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=go-builder /app/server/devlog-server ./devlog-server
-COPY --from=frontend-builder /app/static ./static/
+COPY --from=frontend-builder /app/dist ./dist/
 RUN adduser -D -s /bin/sh appuser
 USER appuser
 EXPOSE 8080
 ENV PORT=8080
-ENV STATIC=./static
+ENV DIST=./dist
 CMD ["./devlog-server"]

@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "bunx biome lint",
-    "format": "bunx biome format",
-    "check": "bunx biome check",
-    "preview": "vite preview"
+    "lint": "bunx biome lint src/",
+    "format": "bunx biome format src/",
+    "check": "bunx biome check src/",
+    "preview": "vite preview",
+    "gofmt": "gofmt -l -w server"
   },
   "dependencies": {
     "react": "^19.2.0",
