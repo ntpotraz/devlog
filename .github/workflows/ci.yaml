@@ -33,9 +33,4 @@ jobs:
             - name: Check Go formatting
               run: |
                 cd server
-                if [ -n "$(gofmt -l .)" ]; then
-                  echo "The following files need formatting:"
-                  gofmt -l .
-                  exit 1
-                fi 
-
+                test -z $(go fmt ./...)
