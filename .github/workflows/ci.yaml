@@ -31,4 +31,6 @@ jobs:
               run: cd frontend && bunx biome check
 
             - name: Check Go formatting
-              run: test -z $(go fmt ./...)
+              run: |
+                cd server
+                test -z $(go fmt ./...)
