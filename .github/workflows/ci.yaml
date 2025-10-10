@@ -19,9 +19,17 @@ jobs:
               with:
                 bun-version: latest
 
+            - name: Setup Go
+              uses: actions/setup-go@v6
+              with:
+                go-version: '1.24.3'
+
             - name: Install dependencies
               run: cd frontend && bun install
 
             - name: Run Biome check
               run: cd frontend && bunx biome check
+
+            - name: Check Go foramttingj
+              run: cd server && go fmt ./...
 
