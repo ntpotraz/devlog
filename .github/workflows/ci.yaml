@@ -31,11 +31,4 @@ jobs:
               run: cd frontend && bunx biome check
 
             - name: Check Go formatting
-              run: |
-                cd server
-                if [ -n "$(gofmt -l .)" ]; then
-                  echo "The following files need formatting:"
-                  gofmt -l .
-                  exit 1
-                fi 
-
+              run: test -z $(go fmt ./...)
