@@ -1,7 +1,11 @@
 import "./App.css";
 
 function App() {
-  return <h1>🚧🚧🚧 Under Construction 🚧🚧🚧</h1>;
+  return (
+    <div className="devlog">
+      <h1 className="heroText !text-4xl">DevLog</h1>
+    </div>
+  );
 }
 
 export default App;

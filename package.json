@@ -13,8 +13,10 @@
     "gofmt": "gofmt -l -w server"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.5",
