@@ -12,13 +12,12 @@ RUN cd server && go build -o devlog-server .
 
 # Runtime stage
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
 COPY --from=go-builder /app/server/devlog-server ./devlog-server
 COPY --from=frontend-builder /app/dist ./dist/
-RUN adduser -D -s /bin/sh appuser
-USER appuser
 EXPOSE 8080
 ENV PORT=8080
 ENV DIST=./dist
+
 CMD ["./devlog-server"]

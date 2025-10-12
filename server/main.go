@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("Warning: .env file not found, using environment variables: %v", err)
@@ -36,6 +35,9 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Printf("Running server on port %s...\n", port)
-	log.Fatal(server.ListenAndServe())
+	log.Println("Starting server...")
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
