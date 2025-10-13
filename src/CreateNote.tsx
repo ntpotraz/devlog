@@ -4,7 +4,7 @@ type CreateNoteProps = {
   noteText: string;
   setNoteText: (text: string) => void;
   addNote: () => void;
-}
+};
 
 function CreateNote({ noteText, setNoteText, addNote }: CreateNoteProps) {
   return (

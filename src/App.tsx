@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import "./App.css";
-import Homepage from "./Homepage";
 import CreateNote from "./CreateNote";
+import Homepage from "./Homepage";
 
 function App() {
   const [newNote, setNewNote] = useState<boolean>(false);

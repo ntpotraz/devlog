@@ -11,8 +11,8 @@ function Homepage({ notes }: HomepageProps) {
         <p>No notes available</p>
       ) : (
         <ul>
-          {notes.map(({body, time}) => (
-            <Note body={body} time={time} />
+          {notes.map(({ body, time }) => (
+            <Note key={time.getMilliseconds()} body={body} time={time} />
           ))}
         </ul>
       )}
