@@ -28,7 +28,9 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col font-sans">
-      <h1 className="devFont text-orange-500 text-9xl text-center my-8">DevLog</h1>
+      <h1 className="devFont text-orange-500 text-9xl text-center my-8">
+        DevLog
+      </h1>
       <button
         type="button"
         className="devFont text-orange-500 text-2xl border border-orange-500 rounded-lg px-8 py-4 hover:bg-orange-500 hover:text-gray-800 transition-all duration-200 ease-in-out"

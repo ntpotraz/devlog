@@ -4,7 +4,9 @@ function Note({ body, time }: { body: string; time: Date }) {
       <h2 className="text-gray-400 text-sm">
         {time.toLocaleDateString()} {time.toLocaleTimeString()}
       </h2>
-      <p className="text-gray-200 mt-2 font-sans whitespace-pre-wrap text-left">{body}</p>
+      <p className="text-gray-200 mt-2 font-sans whitespace-pre-wrap text-left">
+        {body}
+      </p>
     </li>
   );
 }
