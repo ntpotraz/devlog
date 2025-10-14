@@ -1,11 +1,11 @@
 function Note({ body, time }: { body: string; time: Date }) {
   return (
-    <div className="my-5 bg-green-400">
-      <h2>
+    <li className="bg-gray-600 border border-orange-500 rounded-lg p-4 my-4">
+      <h2 className="text-gray-400 text-sm">
         {time.toLocaleDateString()} {time.toLocaleTimeString()}
       </h2>
-      <p>{body}</p>
-    </div>
+      <p className="text-gray-200 mt-2 font-sans whitespace-pre-wrap text-left">{body}</p>
+    </li>
   );
 }
 

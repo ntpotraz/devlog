@@ -15,34 +15,38 @@ function App() {
   };
 
   function addNote() {
-    const note: Note = { body: noteText, time: new Date() };
+    if (noteText === "") {
+      setNewNote(false);
+      return;
+    }
 
-    setNotes([...notes, note]);
+    const note: Note = { body: noteText, time: new Date() };
+    setNotes([note, ...notes]);
     setNoteText("");
     setNewNote(false);
   }
 
   return (
-    <div className="bg-blue-400 h-full flex flex-col">
-      <h1 className="heroText text-orange-600 text-9xl font-extralight">
-        DevLog
-      </h1>
+    <div className="h-screen flex flex-col font-sans">
+      <h1 className="devFont text-orange-500 text-9xl text-center my-8">DevLog</h1>
       <button
         type="button"
-        className="text-red-200 text-2xl border-1 rounded-4xl mx-5 py-7 hover:brightness-115 hover:scale-101 hover:transition-all duration-200 ease-in-out"
+        className="devFont text-orange-500 text-2xl border border-orange-500 rounded-lg px-8 py-4 hover:bg-orange-500 hover:text-gray-800 transition-all duration-200 ease-in-out"
         onClick={() => setNewNote(!newNote)}
       >
         {newNote ? "close" : "new note"}
       </button>
-      {newNote ? (
-        <CreateNote
-          noteText={noteText}
-          setNoteText={setNoteText}
-          addNote={addNote}
-        />
-      ) : (
-        <Homepage notes={notes} />
-      )}
+      <div className="mt-8">
+        {newNote ? (
+          <CreateNote
+            noteText={noteText}
+            setNoteText={setNoteText}
+            addNote={addNote}
+          />
+        ) : (
+          <Homepage notes={notes} />
+        )}
+      </div>
     </div>
   );
 }

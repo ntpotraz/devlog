@@ -6,11 +6,11 @@ type HomepageProps = {
 
 function Homepage({ notes }: HomepageProps) {
   return (
-    <div>
+    <div className="flex flex-col items-center">
       {notes.length === 0 ? (
-        <p>No notes available</p>
+        <p className="text-gray-400">No notes available</p>
       ) : (
-        <ul>
+        <ul className="w-full">
           {notes.map(({ body, time }) => (
             <Note key={time.getMilliseconds()} body={body} time={time} />
           ))}
