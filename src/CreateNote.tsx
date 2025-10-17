@@ -1,4 +1,5 @@
 import { useId, useLayoutEffect, useRef } from "react";
+import { rawToMarkdown } from "./markdown";
 
 type CreateNoteProps = {
   noteText: string;
@@ -35,6 +36,14 @@ function CreateNote({ noteText, setNoteText, addNote }: CreateNoteProps) {
         onClick={addNote}
       >
         create note
+      </button>
+
+      <button
+        className="devFont text-orange-500 w-1/2 m-auto text-xl border border-orange-500 rounded-lg my-4 px-8 py-3 hover:bg-orange-500 hover:text-gray-800 transition-all duration-200 ease-in-out"
+        type="submit"
+        onClick={() => rawToMarkdown(noteText)}
+      >
+        log
       </button>
     </div>
   );
