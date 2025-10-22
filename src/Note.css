@@ -1,0 +1,78 @@
+.log h1,
+.log h2,
+.log h3,
+.log h4,
+.log h5,
+.log h6 {
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.log h1 {
+  font-size: 1.6rem;
+  color: #ef4444;
+}
+
+.log h2 {
+  font-size: 1.5rem;
+  color: #f97316;
+}
+
+.log h3 {
+  font-size: 1.4rem;
+  color: #22c55e;
+}
+
+.log h4 {
+  font-size: 1.3rem;
+  color: #3b82f6;
+}
+
+.log h5 {
+  font-size: 1.2rem;
+  color: #a855f7;
+}
+
+.log h6 {
+  font-size: 1.1rem;
+  color: #14b8a6;
+}
+
+.log p {
+  padding: 1rem;
+}
+
+.log ol, .log ul {
+  padding: 1rem 0;
+  padding-left: 2rem;
+}
+
+.log ul > li {
+  list-style: circle;
+  margin: 0;
+  list-style-position: outside;
+}
+
+.log ol > li {
+  list-style: decimal;
+  list-style-position: outside;
+}
+
+.log strong, .log em {
+  color: #f97316;
+}
+.log pre {
+  display: flex;
+}
+
+.log pre > code {
+  background-color: #374151;
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+.log p > code {
+  background-color: #374151;
+  border-radius: 0.3rem;
+  padding: 0.3rem;
+}

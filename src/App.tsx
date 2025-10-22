@@ -3,6 +3,7 @@ import { useState } from "react";
 import "./App.css";
 import CreateNote from "./CreateNote";
 import Homepage from "./Homepage";
+import { markdownToHtml } from "./markdown";
 
 function App() {
     const [newNote, setNewNote] = useState<boolean>(false);
@@ -20,7 +21,9 @@ function App() {
             return;
         }
 
-        const note: Note = { body: noteText, time: new Date() };
+        const html = markdownToHtml(noteText);
+
+        const note: Note = { body: html, time: new Date() };
         setNotes([note, ...notes]);
         setNoteText("");
         setNewNote(false);
