@@ -1,4 +1,5 @@
 import "./Note.css";
+import Markdown from "react-markdown";
 
 type NoteProps = {
   body: string;
@@ -11,11 +12,9 @@ function Note({ body, time }: NoteProps) {
       <p className="pr-4 text-sm text-gray-500 text-right">
         {time.toLocaleString()}
       </p>
-      <div
-        className="log text-left p-4 bg-gray-600 rounded-2xl"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Escape characters are handled
-        dangerouslySetInnerHTML={{ __html: body }}
-      />
+      <div className="log text-left p-4 bg-gray-600 rounded-2xl">
+        <Markdown>{body}</Markdown>
+      </div>
     </li>
   );
 }
