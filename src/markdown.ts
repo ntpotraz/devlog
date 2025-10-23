@@ -91,7 +91,13 @@ function handleInline(text: string): InlineNode[] {
 
       let node: InlineNode | null = null;
 
-      if (token === "**") {
+      if (token === "***") {
+        i++;
+        node = {
+          element: "BOLD",
+          children: [{ element: "ITALIC", children: parse("***") }],
+        };
+      } else if (token === "**") {
         i++;
         node = { element: "BOLD", children: parse("**") };
       } else if (token === "*") {
