@@ -42,7 +42,8 @@
   padding: 1rem;
 }
 
-.log ol, .log ul {
+.log ol,
+.log ul {
   padding: 1rem 0;
   padding-left: 2rem;
 }
@@ -58,7 +59,8 @@
   list-style-position: outside;
 }
 
-.log strong, .log em {
+.log strong,
+.log em {
   color: #f97316;
 }
 .log pre {

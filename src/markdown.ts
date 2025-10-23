@@ -123,11 +123,11 @@ function handleInline(text: string): InlineNode[] {
 
 function handleHeader(block: string): BlockNode {
   const match = block.match(/^(#{1,6})\s+(.*)$/);
-  const level = match![1].length as 1 | 2 | 3 | 4 | 5 | 6;
-  const content = match![2];
+  const level = match?.[1].length as 1 | 2 | 3 | 4 | 5 | 6;
+  const content = match?.[2];
   return {
     element: `H${level}` as BlockElement,
-    children: handleInline(content),
+    children: handleInline(content as string),
   };
 }
 
