@@ -29,7 +29,7 @@ function App() {
   return (
     <div className="h-screen flex flex-col font-sans">
       <h1 className="devFont text-orange-500 text-9xl text-center my-8">
-        DevLog
+        devlog
       </h1>
       <button
         type="button"

@@ -1,12 +1,20 @@
-function Note({ body, time }: { body: string; time: Date }) {
+import "./Note.css";
+import Markdown from "react-markdown";
+
+type NoteProps = {
+  body: string;
+  time: Date;
+};
+
+function Note({ body, time }: NoteProps) {
   return (
-    <li className="bg-gray-600 border border-orange-500 rounded-lg p-4 my-4">
-      <h2 className="text-gray-400 text-sm">
-        {time.toLocaleDateString()} {time.toLocaleTimeString()}
-      </h2>
-      <p className="text-gray-200 mt-2 font-sans whitespace-pre-wrap text-left">
-        {body}
+    <li className="py-2">
+      <p className="pr-4 text-sm text-gray-500 text-right">
+        {time.toLocaleString()}
       </p>
+      <div className="log text-left p-4 bg-gray-600 rounded-2xl">
+        <Markdown>{body}</Markdown>
+      </div>
     </li>
   );
 }
