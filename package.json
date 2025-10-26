@@ -10,7 +10,8 @@
     "format": "bunx biome format src/",
     "check": "bunx biome check src/",
     "preview": "vite preview",
-    "gofmt": "gofmt -l -w server"
+    "gofmt": "gofmt -l -w server",
+    "gobuild": "./scripts/build.sh"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.15",

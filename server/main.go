@@ -29,6 +29,7 @@ func main() {
 
 	mux.Handle("/", fileServer)
 	mux.HandleFunc("/health", handleHealthCheck)
+	mux.HandleFunc("POST /api/entries", handleAddEntry)
 
 	server := http.Server{
 		Addr:    ":" + port,

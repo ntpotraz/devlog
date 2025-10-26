@@ -1,7 +1,9 @@
-import Note from "./Note";
+import NoteItem from "./NoteItem";
+
+import { type Note } from "./utils";
 
 type HomepageProps = {
-  notes: { body: string; time: Date }[];
+  notes: Note[];
 };
 
 function Homepage({ notes }: HomepageProps) {
@@ -11,8 +13,8 @@ function Homepage({ notes }: HomepageProps) {
         <p className="text-gray-400">No notes available</p>
       ) : (
         <ul className="w-full">
-          {notes.map(({ body, time }) => (
-            <Note key={time.getMilliseconds()} body={body} time={time} />
+          {notes.map((note) => (
+            <NoteItem key={note.createdAt.getMilliseconds()} note={note} />
           ))}
         </ul>
       )}
