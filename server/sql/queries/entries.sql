@@ -6,7 +6,7 @@ VALUES (?, ?, ?, ?, ?, ?);
 SELECT * FROM entries WHERE id = ?;
 
 -- name: GetUserEntries :many
-SELECT * FROM entries WHERE userID = ?;
+SELECT * FROM entries WHERE userID = ? AND isDeleted = 0;
 
 -- name: DeleteEntry :exec
 UPDATE entries

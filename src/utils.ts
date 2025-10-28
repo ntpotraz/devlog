@@ -73,3 +73,11 @@ export async function sendDeleteEntry(entry: Entry) {
     }
   }
 }
+
+export async function getUserEntries() {
+  try {
+    const res = fetch("/api/entries", {
+      method: "GET",
+    });
+  }
+}
