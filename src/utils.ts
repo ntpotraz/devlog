@@ -1,8 +1,9 @@
-const USER = "6c68d115-1dfb-42ec-8892-b9bd7beae26c";
+export const USER = "6c68d115-1dfb-42ec-8892-b9bd7beae26c";
+type uuid = `${string}-${string}-${string}-${string}-${string}`;
 
 export type Entry = {
-  id: `${string}-${string}-${string}-${string}-${string}`;
-  userID: `${string}-${string}-${string}-${string}-${string}`;
+  id: uuid;
+  userID: uuid;
   body: string;
   createdAt: Date;
   updatedAt: Date;
@@ -34,7 +35,6 @@ function cleanText(text: string) {
 
 async function sendEntry(entry: Entry) {
   const jsonEntry = JSON.stringify(entry);
-  console.log(`JSON Obj:\n${jsonEntry}`);
 
   try {
     const res = await fetch("/api/entries", {
@@ -55,7 +55,6 @@ async function sendEntry(entry: Entry) {
 
 export async function sendDeleteEntry(entry: Entry) {
   const entryID = JSON.stringify(entry);
-  console.log(entryID);
 
   try {
     const res = await fetch("/api/entries", {
@@ -74,10 +73,41 @@ export async function sendDeleteEntry(entry: Entry) {
   }
 }
 
-export async function getUserEntries() {
+export async function getUserEntries(userID: uuid) {
   try {
-    const res = fetch("/api/entries", {
+    const res = await fetch(`/api/users/${userID}`, {
       method: "GET",
     });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(`Failed to fetch user entries: ${data}`);
+    }
+    type response = {
+      id: uuid;
+      userID: uuid;
+      body: string;
+      createdAt: string;
+      updatedAt: string;
+      isDeleted: boolean;
+    };
+    const data: response[] = await res.json();
+
+    const entries: Entry[] = [];
+    for (const value of data) {
+      entries.push({
+        id: value.id,
+        userID: value.userID,
+        body: value.body,
+        createdAt: new Date(value.createdAt),
+        updatedAt: new Date(value.updatedAt),
+        isDeleted: value.isDeleted,
+      });
+    }
+    return entries;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
+    }
+    return [] as Entry[];
   }
 }

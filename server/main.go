@@ -53,6 +53,7 @@ func main() {
 	mux.HandleFunc("/health", handleHealthCheck)
 	mux.HandleFunc("POST /api/entries", apiCfg.handleAddEntry)
 	mux.HandleFunc("PUT /api/entries", apiCfg.handleDeleteEntry)
+	mux.HandleFunc("GET /api/users/{userID}", apiCfg.handleGetUserEntries)
 
 	server := http.Server{
 		Addr:    ":" + port,

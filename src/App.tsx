@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import "./App.css";
 import CreateEntry from "./CreateEntry";
 import Homepage from "./Homepage";
-import { createEntry, type Entry, sendDeleteEntry } from "./utils";
+import {
+  createEntry,
+  type Entry,
+  sendDeleteEntry,
+  getUserEntries,
+  USER,
+} from "./utils";
 
 function App() {
   const [newEntry, setNewEntry] = useState<boolean>(false);
   const [entryText, setEntryText] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      const saveEntries = await getUserEntries(USER);
+      setEntries(saveEntries);
+    };
+    fetchEntries();
+  }, []);
 
   function addEntry() {
     if (entryText === "") {
@@ -41,13 +55,6 @@ function App() {
           onClick={() => setNewEntry(!newEntry)}
         >
           {newEntry ? "close" : "new entry"}
-        </button>
-        <button
-          type="button"
-          className="flex-1 devFont text-orange-500 text-2xl border border-orange-500 rounded-lg px-8 py-4 hover:bg-orange-500 hover:text-gray-800 transition-all duration-200 ease-in-out"
-          onClick={() => console.log(entries)}
-        >
-          print entries
         </button>
       </div>
       <div className="mt-8">

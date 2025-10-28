@@ -1,9 +1,9 @@
 package main
 
 import (
-	"context"
 	"devlog/server/internal/database"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -25,10 +25,10 @@ type Entry struct {
 	IsDeleted bool      `json:"isDeleted"`
 }
 
-func getEntryStruct(w http.ResponseWriter, r *http.Request) Entry {
+func getEntryStruct(body io.ReadCloser) Entry {
 	var entryStruct Entry
 
-	if err := json.NewDecoder(r.Body).Decode(&entryStruct); err != nil {
+	if err := json.NewDecoder(body).Decode(&entryStruct); err != nil {
 		log.Fatalf("Error decoding: %v", err)
 		return Entry{}
 	}
@@ -39,7 +39,7 @@ func getEntryStruct(w http.ResponseWriter, r *http.Request) Entry {
 func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling Add Entry")
 
-	entryStruct := getEntryStruct(w, r)
+	entryStruct := getEntryStruct(r.Body)
 
 	var isDeleted int64
 	if entryStruct.IsDeleted {
@@ -56,14 +56,14 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 		Updatedat: entryStruct.UpdatedAt.Format(time.DateTime),
 		Isdeleted: isDeleted,
 	}
-	if err := cfg.DB.CreateEntry(context.Background(), entryParams); err != nil {
+	if err := cfg.DB.CreateEntry(r.Context(), entryParams); err != nil {
 		log.Fatalf("Entry could not be created: %v", err)
 	}
 }
 
 func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling Delete Entry")
-	entryStruct := getEntryStruct(w, r)
+	entryStruct := getEntryStruct(r.Body)
 
 	deleteParams := database.DeleteEntryParams{
 		ID:        entryStruct.Id.String(),
@@ -71,8 +71,58 @@ func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) 
 		Isdeleted: 1,
 	}
 
-	if err := cfg.DB.DeleteEntry(context.Background(), deleteParams); err != nil {
+	if err := cfg.DB.DeleteEntry(r.Context(), deleteParams); err != nil {
 		log.Fatalf("Entry could not be deleted: %v", err)
 	}
+}
 
+func respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	dat, err := json.Marshal(payload)
+	if err != nil {
+		log.Printf("Error marshalling JSON: %s", err.Error())
+		w.WriteHeader(500)
+		return
+	}
+	w.WriteHeader(status)
+	w.Write(dat)
+	log.Println("Sent payload")
+}
+
+func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("userID")
+
+	dbEntries, err := cfg.DB.GetUserEntries(r.Context(), userID)
+	if err != nil {
+		log.Printf("Couldn't fetch user entries: %v", err)
+	}
+	entries := []Entry{}
+	for _, dbEntry := range dbEntries {
+		dbID, err := uuid.Parse(dbEntry.ID)
+		if err != nil {
+			log.Fatalf("invalid userid: %v", err)
+		}
+		dbUserID, err := uuid.Parse(dbEntry.Userid)
+		if err != nil {
+			log.Fatalf("invalid userid: %v", err)
+		}
+		dbCreatedAt, err := time.Parse(time.DateTime, dbEntry.Createdat)
+		if err != nil {
+			log.Fatalf("invalid Createdtime: %v", err)
+		}
+		dbUpdatedAt, err := time.Parse(time.DateTime, dbEntry.Updatedat)
+		if err != nil {
+			log.Fatalf("invalid Updatetime: %v", err)
+		}
+
+		entries = append(entries, Entry{
+			Id:        dbID,
+			UserID:    dbUserID,
+			Body:      dbEntry.Body,
+			CreatedAt: dbCreatedAt,
+			UpdatedAt: dbUpdatedAt,
+		})
+	}
+
+	respondWithJSON(w, http.StatusOK, entries)
 }
