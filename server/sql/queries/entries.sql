@@ -7,3 +7,8 @@ SELECT * FROM entries WHERE id = ?;
 
 -- name: GetUserEntries :many
 SELECT * FROM entries WHERE userID = ?;
+
+-- name: DeleteEntry :exec
+UPDATE entries
+SET isDeleted = ?, updatedAt = ?
+WHERE id = ?;

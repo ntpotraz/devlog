@@ -1,6 +1,6 @@
 const USER = "6c68d115-1dfb-42ec-8892-b9bd7beae26c";
 
-export type Note = {
+export type Entry = {
   id: `${string}-${string}-${string}-${string}-${string}`;
   userID: `${string}-${string}-${string}-${string}-${string}`;
   body: string;
@@ -9,10 +9,10 @@ export type Note = {
   isDeleted: boolean;
 };
 
-export function createNote(noteText: string) {
-  const cleanedText = cleanText(noteText);
+export function createEntry(entryText: string) {
+  const cleanedText = cleanText(entryText);
 
-  const note: Note = {
+  const entry: Entry = {
     id: crypto.randomUUID(),
     userID: USER,
     body: cleanedText,
@@ -21,9 +21,9 @@ export function createNote(noteText: string) {
     isDeleted: false,
   };
 
-  sendNote(note);
+  sendEntry(entry);
 
-  return note;
+  return entry;
 }
 
 function cleanText(text: string) {
@@ -32,15 +32,15 @@ function cleanText(text: string) {
   return text;
 }
 
-async function sendNote(note: Note) {
-  const jsonNote = JSON.stringify(note);
-  console.log(`JSON Obj:\n${jsonNote}`);
+async function sendEntry(entry: Entry) {
+  const jsonEntry = JSON.stringify(entry);
+  console.log(`JSON Obj:\n${jsonEntry}`);
 
   try {
     const res = await fetch("/api/entries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: jsonNote,
+      body: jsonEntry,
     });
     if (!res.ok) {
       const data = await res.json();
@@ -48,7 +48,28 @@ async function sendNote(note: Note) {
     }
   } catch (error) {
     if (error instanceof Error) {
-      alert(`Error: ${error.message}`);
+      console.log(`Error: ${error.message}`);
+    }
+  }
+}
+
+export async function sendDeleteEntry(entry: Entry) {
+  const entryID = JSON.stringify(entry);
+  console.log(entryID);
+
+  try {
+    const res = await fetch("/api/entries", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: entryID,
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(`Failed to delete entry: ${data}`);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
     }
   }
 }

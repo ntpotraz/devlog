@@ -16,7 +16,7 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
-type Note struct {
+type Entry struct {
 	Id        uuid.UUID `json:"id"`
 	UserID    uuid.UUID `json:"userID"`
 	Body      string    `json:"body"`
@@ -25,34 +25,54 @@ type Note struct {
 	IsDeleted bool      `json:"isDeleted"`
 }
 
+func getEntryStruct(w http.ResponseWriter, r *http.Request) Entry {
+	var entryStruct Entry
+
+	if err := json.NewDecoder(r.Body).Decode(&entryStruct); err != nil {
+		log.Fatalf("Error decoding: %v", err)
+		return Entry{}
+	}
+
+	return entryStruct
+}
+
 func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling Add Entry")
 
-	var noteStruct Note
-
-	if err := json.NewDecoder(r.Body).Decode(&noteStruct); err != nil {
-		log.Fatalf("Error decoding: %v", err)
-		return
-	}
+	entryStruct := getEntryStruct(w, r)
 
 	var isDeleted int64
-	if noteStruct.IsDeleted {
+	if entryStruct.IsDeleted {
 		isDeleted = 1
 	} else {
 		isDeleted = 0
 	}
 
 	entryParams := database.CreateEntryParams{
-		ID:        noteStruct.Id.String(),
-		Userid:    noteStruct.UserID.String(),
-		Body:      noteStruct.Body,
-		Createdat: noteStruct.CreatedAt.Format(time.DateTime),
-		Updatedat: noteStruct.UpdatedAt.Format(time.DateTime),
+		ID:        entryStruct.Id.String(),
+		Userid:    entryStruct.UserID.String(),
+		Body:      entryStruct.Body,
+		Createdat: entryStruct.CreatedAt.Format(time.DateTime),
+		Updatedat: entryStruct.UpdatedAt.Format(time.DateTime),
 		Isdeleted: isDeleted,
 	}
 	if err := cfg.DB.CreateEntry(context.Background(), entryParams); err != nil {
 		log.Fatalf("Entry could not be created: %v", err)
 	}
+}
 
-	log.Println(noteStruct)
+func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
+	log.Println("Handling Delete Entry")
+	entryStruct := getEntryStruct(w, r)
+
+	deleteParams := database.DeleteEntryParams{
+		ID:        entryStruct.Id.String(),
+		Updatedat: entryStruct.UpdatedAt.Format(time.DateTime),
+		Isdeleted: 1,
+	}
+
+	if err := cfg.DB.DeleteEntry(context.Background(), deleteParams); err != nil {
+		log.Fatalf("Entry could not be deleted: %v", err)
+	}
+
 }

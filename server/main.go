@@ -52,7 +52,7 @@ func main() {
 	mux.Handle("/", fileServer)
 	mux.HandleFunc("/health", handleHealthCheck)
 	mux.HandleFunc("POST /api/entries", apiCfg.handleAddEntry)
-	mux.HandleFunc("GET /api/entries", apiCfg.handleAddEntry)
+	mux.HandleFunc("PUT /api/entries", apiCfg.handleDeleteEntry)
 
 	server := http.Server{
 		Addr:    ":" + port,
