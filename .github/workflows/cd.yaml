@@ -46,6 +46,14 @@ jobs:
       - name: Run migrations
         run: ./scripts/migrateup.sh
 
+      - name: Setup sqlc
+        uses: sqlc-dev/setup-sqlc@v4
+        with:
+          sqlc-version: "1.29.0"
+        run: |
+          cd server
+          sqlc generate
+
       - name: Build and push Docker image to Artifact Registry
         run: |
           # Build the Docker image
