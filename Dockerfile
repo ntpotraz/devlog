@@ -9,6 +9,6 @@ COPY devlog-server .
 
 EXPOSE 8080
 ENV PORT=8080
-ENV DIST=./dist
+ENV DIST=./app/dist
 
 CMD ["./devlog-server"]
