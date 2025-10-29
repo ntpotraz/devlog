@@ -6,9 +6,9 @@ on:
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_REGION: us-west1 # Update this to your preferred region
-  ARTIFACT_REGISTRY_REPO: devlog # Update this to your Artifact Registry repository name
-  CLOUD_RUN_SERVICE: devlog # Update this to your Cloud Run service name
+  GCP_REGION: us-west1
+  ARTIFACT_REGISTRY_REPO: devlog
+  CLOUD_RUN_SERVICE: devlog
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
   CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
@@ -21,25 +21,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Setup Bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      # Build Frontend
+      - name: Install and build frontend
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ env.VITE_CLERK_PUBLISHABLE_KEY }}
+        run: |
+          bun install
+          bun run build
+
+      # Setup Go
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
           go-version: "1.24.3"
 
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup Google Cloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.GCP_PROJECT_ID }}
-
-      - name: Configure Docker for Artifact Registry
+      # Build Backend
+      - name: Build Go server
         run: |
-          gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+          cd server
+          go build -o ../devlog-server .
 
+      # Database tools setup
       - name: Install goose
         run: go install github.com/pressly/goose/v3/cmd/goose@latest
 
@@ -56,16 +64,28 @@ jobs:
           cd server
           sqlc generate
 
-      - name: Build and push Docker image to Artifact Registry
-        run: |
-          # Build the Docker image
-          docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest .
+      # GCP setup
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-          # Push the image
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+
+      # Build and push container
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest .
           docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest
 
-          echo "Image URI: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest"
-
+      # Deploy to Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.CLOUD_RUN_SERVICE }} \
