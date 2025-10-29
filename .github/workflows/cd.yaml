@@ -80,7 +80,7 @@ jobs:
             --min-instances 0 \
             --set-env-vars="DIST=./dist" \
             --set-env-vars="DATABASE_URL=${{ env.DATABASE_URL }}" \
-            --set-env-vars="CLERK_SECRET_KEY=${{ env.CLERK_SECRET_KEY }}"
+            --set-env-vars="CLERK_SECRET_KEY=${{ env.CLERK_SECRET_KEY }}" \
             --set-env-vars="VITE_CLERK_PUBLISHABLE_KEY=${{ env.VITE_CLERK_PUBLISHABLE_KEY }}"
 
           echo "Cloud Run service deployed successfully"
