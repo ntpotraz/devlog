@@ -19,5 +19,6 @@ COPY --from=frontend-builder /app/dist ./dist/
 EXPOSE 8080
 ENV PORT=8080
 ENV DIST=./dist
+ENV VITE_CLERK_PUBLISHABLE_KEY=pk_test_Ymxlc3NlZC1zdGFnLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ
 
 CMD ["./devlog-server"]
