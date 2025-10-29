@@ -81,8 +81,8 @@ function Homepage() {
   }
 
   return (
-    <div className="h-screen flex flex-col font-sans">
-      <h1 className="devFont text-orange-500 text-9xl text-center my-8">
+    <div className="w-full h-full px-20 flex flex-col font-sans">
+      <h1 className="devFont text-orange-500 text-6xl md:text-9xl text-center my-4">
         devlog
       </h1>
       <div className="absolute top-4 right-4">
