@@ -1,15 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap");
-
 #root {
   margin: auto;
   width: 80%;
-  height: 100vh;
-}
-
-body {
-  text-align: center;
-}
-
-.devFont {
-  font-family: "Bitcount single", system-ui;
+  height: 100%;
 }

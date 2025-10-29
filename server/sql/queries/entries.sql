@@ -3,7 +3,7 @@ INSERT INTO entries (id, userID, body, createdAt, updatedAt, isDeleted)
 VALUES (?, ?, ?, ?, ?, ?);
 
 -- name: GetEntry :one
-SELECT * FROM entries WHERE id = ?;
+SELECT * FROM entries WHERE id = ? LIMIT 1;
 
 -- name: GetUserEntries :many
 SELECT * FROM entries

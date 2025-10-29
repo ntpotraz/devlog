@@ -1,30 +1,19 @@
-export const USER = "6c68d115-1dfb-42ec-8892-b9bd7beae26c";
-type uuid = `${string}-${string}-${string}-${string}-${string}`;
-
 export type Entry = {
-  id: uuid;
-  userID: uuid;
+  id: string;
   body: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export function createEntry(entryText: string) {
+export async function createEntry(entryText: string, token: string) {
   const cleanedText = cleanText(entryText);
 
-  const entry: Entry = {
-    id: crypto.randomUUID(),
-    userID: USER,
+  const entry = {
     body: cleanedText,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isDeleted: false,
   };
 
-  sendEntry(entry);
-
-  return entry;
+  const entryFromServer = await sendEntry(entry, token);
+  return entryFromServer;
 }
 
 function cleanText(text: string) {
@@ -33,34 +22,39 @@ function cleanText(text: string) {
   return text;
 }
 
-async function sendEntry(entry: Entry) {
-  const jsonEntry = JSON.stringify(entry);
-
+async function sendEntry(body: { body: string }, token: string) {
   try {
     const res = await fetch("/api/entries", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: jsonEntry,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
       const data = await res.json();
       throw new Error(`Failed to create entry: ${data}`);
     }
+    const savedEntry: Entry = await res.json();
+    return savedEntry;
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
+      console.error(`sendEntry failed: ${error.message}`);
     }
+    throw error;
   }
 }
 
-export async function sendDeleteEntry(entry: Entry) {
-  const entryID = JSON.stringify(entry);
-
+export async function sendDeleteEntry(id: string, token: string) {
   try {
     const res = await fetch("/api/entries", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: entryID,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: id }),
     });
     if (!res.ok) {
       const data = await res.json();
@@ -73,37 +67,21 @@ export async function sendDeleteEntry(entry: Entry) {
   }
 }
 
-export async function getUserEntries(userID: uuid) {
+export async function getUserEntries(token: string) {
   try {
-    const res = await fetch(`/api/users/${userID}`, {
+    const res = await fetch("/api/entries", {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!res.ok) {
       const data = await res.json();
       throw new Error(`Failed to fetch user entries: ${data}`);
     }
-    type response = {
-      id: uuid;
-      userID: uuid;
-      body: string;
-      createdAt: string;
-      updatedAt: string;
-      isDeleted: boolean;
-    };
-    const data: response[] = await res.json();
+    const data: Entry[] = await res.json();
 
-    const entries: Entry[] = [];
-    for (const value of data) {
-      entries.push({
-        id: value.id,
-        userID: value.userID,
-        body: value.body,
-        createdAt: new Date(value.createdAt),
-        updatedAt: new Date(value.updatedAt),
-        isDeleted: value.isDeleted,
-      });
-    }
-    return entries;
+    return data;
   } catch (error) {
     if (error instanceof Error) {
       console.log(`Error: ${error.message}`);

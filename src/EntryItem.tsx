@@ -8,12 +8,12 @@ type EntryProps = {
 };
 
 function EntryItem({ entry, deleteEntry }: EntryProps) {
+  const date = new Date(entry.createdAt);
+  const dateFormat = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`;
   return (
     <li className="py-2">
       <div className="flex items-center px-4 my-1 place-content-between">
-        <p className="pr-4 text-sm text-gray-500 text-right">
-          {entry.createdAt.toLocaleString()}
-        </p>
+        <p className="pr-4 text-sm text-gray-500 text-right">{dateFormat}</p>
         <button
           type="button"
           className="text-red-600 hover:text-red-300 hover:bg-gray-700 p-1 flex items-center justify-center rounded-4xl transition-all duration-100 ease-in-out"

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/clerk/clerk-sdk-go/v2"
+	"github.com/clerk/clerk-sdk-go/v2/user"
 	"github.com/google/uuid"
 )
 
@@ -18,7 +20,7 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 
 type Entry struct {
 	Id        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"userID"`
+	UserID    string    `json:"userID"`
 	Body      string    `json:"body"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -36,38 +38,77 @@ func getEntryStruct(body io.ReadCloser) Entry {
 	return entryStruct
 }
 
+func getUser(w http.ResponseWriter, r *http.Request) *clerk.User {
+	claims, ok := clerk.SessionClaimsFromContext(r.Context())
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"access": "unauthorized"}`))
+		return nil
+	}
+
+	usr, err := user.Get(r.Context(), claims.Subject)
+	if err != nil {
+		http.Error(w, "error getting user", http.StatusInternalServerError)
+		return nil
+	}
+	return usr
+}
+
 func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling Add Entry")
 
-	entryStruct := getEntryStruct(r.Body)
-
-	var isDeleted int64
-	if entryStruct.IsDeleted {
-		isDeleted = 1
-	} else {
-		isDeleted = 0
+	user := getUser(w, r)
+	if user == nil {
+		return
 	}
 
+	entryStruct := getEntryStruct(r.Body)
+
 	entryParams := database.CreateEntryParams{
-		ID:        entryStruct.Id.String(),
-		Userid:    entryStruct.UserID.String(),
+		ID:        uuid.New().String(),
+		Userid:    user.ID,
 		Body:      entryStruct.Body,
-		Createdat: entryStruct.CreatedAt.Format(time.DateTime),
-		Updatedat: entryStruct.UpdatedAt.Format(time.DateTime),
-		Isdeleted: isDeleted,
+		Createdat: time.Now().UTC().Format(time.DateTime),
+		Updatedat: time.Now().UTC().Format(time.DateTime),
+		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), entryParams); err != nil {
 		log.Fatalf("Entry could not be created: %v", err)
+		http.Error(w, "Failed to create entry", http.StatusInternalServerError)
+		return
 	}
+
+	entryStruct.CreatedAt = time.Now().UTC()
+	entryStruct.UpdatedAt = time.Now().UTC()
+
+	respondWithJSON(w, http.StatusCreated, entryStruct)
 }
 
 func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling Delete Entry")
+
+	user := getUser(w, r)
+	if user == nil {
+		return
+	}
 	entryStruct := getEntryStruct(r.Body)
+
+	entry, err := cfg.DB.GetEntry(r.Context(), entryStruct.Id.String())
+	if err != nil {
+		log.Printf("Error fetching entry: %v", err)
+		http.Error(w, "Entry not found", http.StatusNotFound)
+		return
+	}
+
+	if user.ID != entry.Userid {
+		log.Println("Unauthorized deletion attempt")
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
 
 	deleteParams := database.DeleteEntryParams{
 		ID:        entryStruct.Id.String(),
-		Updatedat: entryStruct.UpdatedAt.Format(time.DateTime),
+		Updatedat: time.Now().UTC().Format(time.DateTime),
 		Isdeleted: 1,
 	}
 
@@ -90,9 +131,11 @@ func respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
 }
 
 func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Request) {
-	userID := r.PathValue("userID")
 
-	dbEntries, err := cfg.DB.GetUserEntries(r.Context(), userID)
+	user := getUser(w, r)
+	log.Println("USER ID:", user.ID)
+
+	dbEntries, err := cfg.DB.GetUserEntries(r.Context(), user.ID)
 	if err != nil {
 		log.Printf("Couldn't fetch user entries: %v", err)
 	}
@@ -102,10 +145,7 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			log.Fatalf("invalid userid: %v", err)
 		}
-		dbUserID, err := uuid.Parse(dbEntry.Userid)
-		if err != nil {
-			log.Fatalf("invalid userid: %v", err)
-		}
+
 		dbCreatedAt, err := time.Parse(time.DateTime, dbEntry.Createdat)
 		if err != nil {
 			log.Fatalf("invalid Createdtime: %v", err)
@@ -117,12 +157,13 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 
 		entries = append(entries, Entry{
 			Id:        dbID,
-			UserID:    dbUserID,
+			UserID:    dbEntry.Userid,
 			Body:      dbEntry.Body,
 			CreatedAt: dbCreatedAt,
 			UpdatedAt: dbUpdatedAt,
 		})
 	}
 
+	log.Println(entries)
 	respondWithJSON(w, http.StatusOK, entries)
 }
