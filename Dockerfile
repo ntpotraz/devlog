@@ -1,24 +1,14 @@
-# Build stage
-FROM oven/bun:1 AS frontend-builder
-WORKDIR /app
-COPY . .
-RUN bun install && bun run build
-
-# Go build stage
-FROM golang:1.24-alpine AS go-builder
-WORKDIR /app
-COPY server/ ./server/
-RUN cd server && go build -o devlog-server .
-
-# Runtime stage
+# Runtime stage only - builds happen in GitHub Actions
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
-COPY --from=go-builder /app/server/devlog-server ./devlog-server
-COPY --from=frontend-builder /app/dist ./dist/
+
+# Copy pre-built artifacts
+COPY dist/ ./dist/
+COPY devlog-server ./devlog-server
+
 EXPOSE 8080
 ENV PORT=8080
 ENV DIST=./dist
-ENV VITE_CLERK_PUBLISHABLE_KEY=pk_test_Ymxlc3NlZC1zdGFnLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ
 
 CMD ["./devlog-server"]
