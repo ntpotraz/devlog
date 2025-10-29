@@ -77,6 +77,9 @@ jobs:
             --memory 1Gi \
             --cpu 1 \
             --max-instances 10 \
-            --min-instances 0
+            --min-instances 0 \
+            --set-env-vars="DIST=./dist" \
+            --set-env-vars="DATABASE_URL=${{ secrets.DATABASE_URL }}" \
+            --set-env-vars="CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}"
 
           echo "Cloud Run service deployed successfully"
