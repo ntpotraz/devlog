@@ -1,8 +1,6 @@
 # Ignore local build artifacts to prevent contamination
 .env
-dist/
 node_modules/
-devlog-server
 .git/
 .github/
 *.log
