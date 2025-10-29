@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import "./Homepage.css";
 import CreateEntry from "./CreateEntry";
+import Devlog from "./Devlog";
 import Log from "./Log";
 import {
   createEntry,
@@ -82,9 +83,7 @@ function Homepage() {
 
   return (
     <div className="w-full h-full px-20 flex flex-col font-sans">
-      <h1 className="devFont text-orange-500 text-6xl md:text-9xl text-center my-4">
-        devlog
-      </h1>
+      <Devlog />
       <div className="absolute top-4 right-4">
         <UserButton />
       </div>

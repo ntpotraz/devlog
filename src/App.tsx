@@ -1,14 +1,13 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import "./App.css";
+import Devlog from "./Devlog";
 import Homepage from "./Homepage";
 
 function App() {
   return (
     <header>
       <SignedOut>
-        <h1 className="devFont text-orange-500 text-9xl text-center my-8">
-          devlog
-        </h1>
+        <Devlog />
         <SignInButton>
           <button
             type="button"
