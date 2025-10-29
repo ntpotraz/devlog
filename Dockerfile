@@ -4,8 +4,8 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /app
 
 # Copy pre-built artifacts
-COPY dist/ ./dist/
-COPY devlog-server ./devlog-server
+COPY dist/ ./dist
+COPY devlog-server .
 
 EXPOSE 8080
 ENV PORT=8080

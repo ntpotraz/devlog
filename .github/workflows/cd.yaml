@@ -62,7 +62,8 @@ jobs:
       - name: Build Go server
         run: |
           cd server
-          go build -o ../devlog-server .
+          go build -o devlog-server
+          mv devlog-server ../
 
       # GCP setup
       - id: auth
