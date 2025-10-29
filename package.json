@@ -10,9 +10,11 @@
     "format": "bunx biome format src/",
     "check": "bunx biome check src/",
     "preview": "vite preview",
-    "gofmt": "gofmt -l -w server"
+    "gofmt": "gofmt -l -w server",
+    "gobuild": "./scripts/build.sh"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.53.3",
     "@tailwindcss/vite": "^4.1.15",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

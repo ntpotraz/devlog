@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap");
+
+body {
+  text-align: center;
+}
+
+.devFont {
+  font-family: "Bitcount single", system-ui;
+}

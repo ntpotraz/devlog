@@ -26,3 +26,4 @@ static
 
 devlog-server
 .env
+server/internal/database/*.go

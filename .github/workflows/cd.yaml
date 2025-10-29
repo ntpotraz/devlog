@@ -6,14 +6,18 @@ on:
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_REGION: us-west1
-  ARTIFACT_REGISTRY_REPO: devlog
-  CLOUD_RUN_SERVICE: devlog
+  GCP_REGION: us-west1 # Update this to your preferred region
+  ARTIFACT_REGISTRY_REPO: devlog # Update this to your Artifact Registry repository name
+  CLOUD_RUN_SERVICE: devlog # Update this to your Cloud Run service name
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,14 +36,20 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
 
+      - name: Install goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
+
+      - name: Run migrations
+        run: ./scripts/migrateup.sh
+
       - name: Build and push Docker image to Artifact Registry
         run: |
           # Build the Docker image
           docker build -t ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest .
-          
+
           # Push the image
           docker push ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest
-          
+
           echo "Image URI: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/devlog:latest"
 
       - name: Deploy to Cloud Run
