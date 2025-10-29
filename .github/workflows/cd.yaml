@@ -62,7 +62,7 @@ jobs:
       - name: Build Go server
         run: |
           cd server
-          go build -o devlog-server
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o devlog-server
           mv devlog-server ../
 
       # GCP setup
@@ -95,12 +95,12 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --port 8080 \
-            --memory 1Gi \
+            --memory 2Gi \
             --cpu 1 \
-            --max-instances 10 \
+            --max-instances 4 \
             --min-instances 0 \
             --set-env-vars="DATABASE_URL=${{ env.DATABASE_URL }}" \
             --set-env-vars="CLERK_SECRET_KEY=${{ env.CLERK_SECRET_KEY }}" \
-            --set-env-vars="DIST=/app/dist"
+            --set-env-vars="DIST=/dist"
 
           echo "Cloud Run service deployed successfully"
