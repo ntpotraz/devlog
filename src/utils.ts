@@ -6,20 +6,12 @@ export type Entry = {
 };
 
 export async function createEntry(entryText: string, token: string) {
-  const cleanedText = cleanText(entryText);
-
   const entry = {
-    body: cleanedText,
+    body: entryText,
   };
 
   const entryFromServer = await sendEntry(entry, token);
   return entryFromServer;
-}
-
-function cleanText(text: string) {
-  text = text.replaceAll(/\n\n+/g, "\n");
-
-  return text;
 }
 
 async function sendEntry(body: { body: string }, token: string) {
