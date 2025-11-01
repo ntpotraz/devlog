@@ -9,17 +9,15 @@ type LogProps = {
 
 function Log({ entries, deleteEntry }: LogProps) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col gap-6">
       {entries.length === 0 ? (
-        <p className="text-gray-400">no entries available</p>
+        <p className="devFont text-xs uppercase tracking-[0.4em] text-orange-200/70">
+          nothing logged yet
+        </p>
       ) : (
-        <ul className="w-full">
+        <ul className="flex flex-col gap-4">
           {entries.map((entry) => (
-            <EntryItem
-              key={entry.createdAt}
-              entry={entry}
-              deleteEntry={deleteEntry}
-            />
+            <EntryItem key={entry.id} entry={entry} deleteEntry={deleteEntry} />
           ))}
         </ul>
       )}

@@ -6,6 +6,7 @@
       "dependencies": {
         "@clerk/clerk-react": "^5.53.3",
         "@tailwindcss/vite": "^4.1.15",
+        "frontend": ".",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-markdown": "^10.1.0",
@@ -255,6 +256,8 @@
     "extend": ["extend@3.0.2", "", {}, "sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g=="],
 
     "fdir": ["fdir@6.5.0", "", { "peerDependencies": { "picomatch": "^3 || ^4" }, "optionalPeers": ["picomatch"] }, "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg=="],
+
+    "frontend": ["frontend@file:", { "dependencies": { "@clerk/clerk-react": "^5.53.3", "@tailwindcss/vite": "^4.1.15", "react": "^19.2.0", "react-dom": "^19.2.0", "react-markdown": "^10.1.0", "tailwindcss": "^4.1.15" }, "devDependencies": { "@biomejs/biome": "2.2.5", "@types/node": "^24.9.1", "@types/react": "^19.2.2", "@types/react-dom": "^19.2.2", "@vitejs/plugin-react": "^5.0.4", "babel-plugin-react-compiler": "^19.1.0-rc.1-rc-af1b7da-20250421", "globals": "^16.4.0", "typescript": "~5.9.3", "vite": "npm:rolldown-vite@7.1.14" } }],
 
     "fsevents": ["fsevents@2.3.3", "", { "os": "darwin" }, "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="],
 
