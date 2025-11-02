@@ -9,17 +9,30 @@ type EntryProps = {
 
 function EntryItem({ entry, deleteEntry }: EntryProps) {
   const date = new Date(entry.createdAt);
+  const hasUpdated = entry.createdAt !== entry.updatedAt;
   const dateFormat = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`;
+  const updatedDate = new Date(entry.updatedAt);
+  const updatedDateFormat = `${updatedDate.toLocaleDateString()}, ${updatedDate.toLocaleTimeString()}`;
+
+
   return (
     <li className="group rounded-2xl border border-orange-400/25 bg-[#111217]/85 px-6 py-6 shadow-[inset_0_1px_0_rgba(255,124,45,0.08)] transition hover:border-orange-300/40 hover:shadow-[0_0_35px_rgba(255,124,45,0.15)]">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <p className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
             {dateFormat}
+          {hasUpdated && (
+            <>
+            <br />
+            <em className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
+              edited {updatedDateFormat}
+            </em>
+            </>
+          )}
           </p>
           <button
             type="button"
-            className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 text-[10px] tracking-[0.45em] text-orange-200 transition hover:border-orange-300 hover:bg-orange-400/10 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/45"
+            className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 tracking-[0.45em] transition hover:border-red-600 hover:bg-red-700/10  focus:outline-none focus:ring-2 focus:ring-red-400/45"
             onClick={() => deleteEntry(entry)}
           >
             <svg

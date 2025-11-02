@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&family=Space+Mono:wght@400;700&display=swap");
 
 :root {
   color-scheme: dark;
@@ -77,6 +76,6 @@ textarea {
 
 .devFont {
   font-family:
-    "Bitcount Single", "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, "Liberation Mono", monospace;
 }
