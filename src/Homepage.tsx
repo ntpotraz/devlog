@@ -1,8 +1,7 @@
 import { UserButton, useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
-
-import EntryEditor from "./EntryEditor";
 import Devlog from "./Devlog";
+import EntryEditor from "./EntryEditor";
 import Log from "./Log";
 import {
   createEntry,
@@ -104,7 +103,7 @@ function Homepage() {
         <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,122,24,0.08)_0px,rgba(255,122,24,0.08)_1px,transparent_1px,transparent_5px)] opacity-20" />
       </div>
       <div className="relative z-10 flex flex-col gap-12 px-4 py-6 pt-12 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <header className="flex flex-row gap-6 justify-between">
           <div className="space-y-4">
             <Devlog className="justify-start" />
           </div>
@@ -118,7 +117,6 @@ function Homepage() {
               </p>
             </div>
             <UserButton
-              afterSignOutUrl="/"
               appearance={{
                 elements: {
                   userButtonPopoverCard:
@@ -172,7 +170,12 @@ function Homepage() {
                 <button
                   type="button"
                   className="devFont w-full rounded-xl border border-orange-400/40 bg-transparent px-6 py-3 text-xs tracking-[0.45em] text-orange-200 transition hover:border-orange-300/70 hover:bg-orange-400/10 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
-                  onClick={() => setEditingEntryId(null)}
+                  onClick={() => {
+                    if (editingEntryId !== "new") {
+                      setEntryText("");
+                    }
+                    setEditingEntryId(null);
+                  }}
                 >
                   {editingEntryId === "new" ? "cancel compose" : "cancel edit"}
                 </button>

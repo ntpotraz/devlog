@@ -1,5 +1,4 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
-import "./App.css";
 import Devlog from "./Devlog";
 import Homepage from "./Homepage";
 
@@ -34,8 +33,7 @@ function App() {
                 </div>
                 <div className="space-y-6">
                   <p className="max-w-xl text-balance font-mono text-sm leading-relaxed text-orange-100/80">
-                    Welcome to your development log. Authenticate to resume
-                    transmission and capture the next note in the stack.
+                    Welcome to devlog
                   </p>
                   <SignInButton>
                     <button
