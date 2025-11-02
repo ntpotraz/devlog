@@ -1,18 +1,18 @@
 import { useId, useLayoutEffect, useRef } from "react";
 
-type CreateEntryProps = {
+type EntryEditorProps = {
   entryText: string;
   setEntryText: (text: string) => void;
   onSubmit: () => void;
   buttonText: string;
 };
 
-function CreateEntry({
+function EntryEditor({
   entryText,
   setEntryText,
   onSubmit,
   buttonText,
-}: CreateEntryProps) {
+}: EntryEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: the `scrollHeight` of the textarea depends on `entryText`
@@ -49,4 +49,4 @@ function CreateEntry({
   );
 }
 
-export default CreateEntry;
+export default EntryEditor;

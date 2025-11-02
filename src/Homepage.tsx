@@ -1,7 +1,7 @@
 import { UserButton, useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
-import CreateEntry from "./CreateEntry";
+import EntryEditor from "./CreateEntry";
 import Devlog from "./Devlog";
 import Log from "./Log";
 import {
@@ -195,7 +195,7 @@ function Homepage() {
             <div className="flex flex-col rounded-2xl px-4 py-6">
               {editingEntryId ? (
                 <div className="flex flex-1 flex-col overflow-y-auto pr-1">
-                  <CreateEntry
+                  <EntryEditor
                     entryText={entryText}
                     setEntryText={setEntryText}
                     onSubmit={handleSubmit}
