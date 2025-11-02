@@ -72,6 +72,10 @@ func main() {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleGetUserEntries))
 		handler.ServeHTTP(w, r)
 	})
+	mux.HandleFunc("PATCH /api/entries/{id}", func(w http.ResponseWriter, r *http.Request) {
+		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleUpdateEntry))
+		handler.ServeHTTP(w, r)
+	})
 
 	server := http.Server{
 		Addr:    ":" + port,

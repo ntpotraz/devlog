@@ -14,6 +14,38 @@ export async function createEntry(entryText: string, token: string) {
   return entryFromServer;
 }
 
+export async function updateEntry(
+  entryId: string,
+  entryText: string,
+  token: string,
+) {
+  const entry = {
+    id: entryId,
+    body: entryText,
+  };
+
+  try {
+    const res = await fetch(`/api/entries/${entry.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(entry),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(`Failed to update entry: ${data}`);
+    }
+    const updatedEntry: Entry = await res.json();
+    return updatedEntry;
+  } catch (error) {
+    if (error instanceof Error) {
+    }
+    throw error;
+  }
+}
+
 async function sendEntry(body: { body: string }, token: string) {
   try {
     const res = await fetch("/api/entries", {

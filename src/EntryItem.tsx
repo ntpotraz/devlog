@@ -5,34 +5,65 @@ import Markdown from "react-markdown";
 type EntryProps = {
   entry: Entry;
   deleteEntry: (entry: Entry) => void;
+  onEdit: (entry: Entry) => void;
 };
 
-function EntryItem({ entry, deleteEntry }: EntryProps) {
+function EntryItem({ entry, deleteEntry, onEdit }: EntryProps) {
   const date = new Date(entry.createdAt);
+  const hasUpdated = entry.createdAt !== entry.updatedAt;
   const dateFormat = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`;
+  const updatedDate = new Date(entry.updatedAt);
+  const updatedDateFormat = `${updatedDate.toLocaleDateString()}, ${updatedDate.toLocaleTimeString()}`;
+
   return (
     <li className="group rounded-2xl border border-orange-400/25 bg-[#111217]/85 px-6 py-6 shadow-[inset_0_1px_0_rgba(255,124,45,0.08)] transition hover:border-orange-300/40 hover:shadow-[0_0_35px_rgba(255,124,45,0.15)]">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <p className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
             {dateFormat}
+            {hasUpdated && (
+              <>
+                <br />
+                <em className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
+                  edited {updatedDateFormat}
+                </em>
+              </>
+            )}
           </p>
-          <button
-            type="button"
-            className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 text-[10px] tracking-[0.45em] text-orange-200 transition hover:border-orange-300 hover:bg-orange-400/10 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/45"
-            onClick={() => deleteEntry(entry)}
-          >
-            <svg
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
-              viewBox="0 0 24 24"
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 tracking-[0.45em] transition hover:border-blue-600 hover:bg-blue-700/10  focus:outline-none focus:ring-2 focus:ring-blue-400/45"
+              onClick={() => onEdit(entry)}
             >
-              <title>delete</title>
-              <path d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z" />
-            </svg>
-          </button>
+              <svg
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <title>edit</title>
+                <path d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h8.925l-2 2H5v14h14v-6.95l2-2V19q0 .825-.587 1.413T19 21zm4-6v-4.25l9.175-9.175q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4t-.137.738t-.438.662L13.25 15zM21.025 4.4l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 tracking-[0.45em] transition hover:border-red-600 hover:bg-red-700/10  focus:outline-none focus:ring-2 focus:ring-red-400/45"
+              onClick={() => deleteEntry(entry)}
+            >
+              <svg
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <title>delete</title>
+                <path d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM9 17h2V8H9zm4 0h2V8h-2zM7 6v13z" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div className="log text-left text-sm leading-relaxed text-orange-50/90">
           <Markdown>{entry.body}</Markdown>
