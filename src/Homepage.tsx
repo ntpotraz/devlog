@@ -1,7 +1,7 @@
 import { UserButton, useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
-import EntryEditor from "./CreateEntry";
+import EntryEditor from "./EntryEditor";
 import Devlog from "./Devlog";
 import Log from "./Log";
 import {
@@ -13,7 +13,6 @@ import {
 } from "./utils";
 
 function Homepage() {
-  // const [newEntry, setNewEntry] = useState<boolean>(false);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [entryText, setEntryText] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
