@@ -64,12 +64,15 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 
 	entryStruct := getEntryStruct(r.Body)
 
+	entryID := uuid.New()
+	now := time.Now().UTC()
+
 	entryParams := database.CreateEntryParams{
-		ID:        uuid.New().String(),
+		ID:        entryID.String(),
 		Userid:    user.ID,
 		Body:      entryStruct.Body,
-		Createdat: time.Now().UTC().Format(time.DateTime),
-		Updatedat: time.Now().UTC().Format(time.DateTime),
+		Createdat: now.Format(time.DateTime),
+		Updatedat: now.Format(time.DateTime),
 		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), entryParams); err != nil {
@@ -78,10 +81,16 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	entryStruct.CreatedAt = time.Now().UTC()
-	entryStruct.UpdatedAt = time.Now().UTC()
+	resEntry := Entry{
+		Id:        entryID,
+		UserID:    user.ID,
+		Body:      entryStruct.Body,
+		CreatedAt: now,
+		UpdatedAt: now,
+		IsDeleted: false,
+	}
 
-	respondWithJSON(w, http.StatusCreated, entryStruct)
+	respondWithJSON(w, http.StatusCreated, resEntry)
 }
 
 func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +142,6 @@ func respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
 func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Request) {
 
 	user := getUser(w, r)
-	log.Println("USER ID:", user.ID)
 
 	dbEntries, err := cfg.DB.GetUserEntries(r.Context(), user.ID)
 	if err != nil {
@@ -166,4 +174,71 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 
 	log.Println(entries)
 	respondWithJSON(w, http.StatusOK, entries)
+}
+
+func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	user := getUser(w, r)
+	if user == nil {
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
+
+	entry, err := cfg.DB.GetEntry(r.Context(), id)
+	if err != nil {
+		log.Printf("Error fetching entry: %v", err)
+		http.Error(w, "Entry not found", http.StatusNotFound)
+		return
+	}
+
+	if user.ID != entry.Userid {
+		log.Println("Unauthorized update attempt")
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
+
+	entryStruct := getEntryStruct(r.Body)
+
+	entryID := uuid.New()
+	updatedAt := time.Now().UTC()
+
+	updateParams := database.CreateEntryParams{
+		ID:        entryID.String(),
+		Userid:    user.ID,
+		Body:      entryStruct.Body,
+		Createdat: entry.Createdat,
+		Updatedat: updatedAt.Format(time.DateTime),
+		Isdeleted: 0,
+	}
+	if err := cfg.DB.CreateEntry(r.Context(), updateParams); err != nil {
+		log.Fatalf("Entry could not be updated: %v", err)
+		http.Error(w, "Failed to update entry", http.StatusInternalServerError)
+		return
+	}
+
+	createdAt, err := time.Parse(time.DateTime, entry.Createdat)
+	if err != nil {
+		log.Fatalf("invalid Createdtime: %v", err)
+	}
+
+	deleteParams := database.DeleteEntryParams{
+		ID:        id,
+		Updatedat: updatedAt.Format(time.DateTime),
+		Isdeleted: 1,
+	}
+
+	if err := cfg.DB.DeleteEntry(r.Context(), deleteParams); err != nil {
+		log.Fatalf("Entry could not be deleted: %v", err)
+	}
+
+	resEntry := Entry{
+		Id:        entryID,
+		UserID:    user.ID,
+		Body:      entryStruct.Body,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		IsDeleted: false,
+	}
+
+	respondWithJSON(w, http.StatusOK, resEntry)
 }

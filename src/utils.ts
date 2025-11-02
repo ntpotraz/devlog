@@ -6,20 +6,44 @@ export type Entry = {
 };
 
 export async function createEntry(entryText: string, token: string) {
-  const cleanedText = cleanText(entryText);
-
   const entry = {
-    body: cleanedText,
+    body: entryText,
   };
 
   const entryFromServer = await sendEntry(entry, token);
   return entryFromServer;
 }
 
-function cleanText(text: string) {
-  text = text.replaceAll(/\n\n+/g, "\n");
+export async function updateEntry(
+  entryId: string,
+  entryText: string,
+  token: string,
+) {
+  const entry = {
+    id: entryId,
+    body: entryText,
+  };
 
-  return text;
+  try {
+    const res = await fetch(`/api/entries/${entry.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(entry),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(`Failed to update entry: ${data}`);
+    }
+    const updatedEntry: Entry = await res.json();
+    return updatedEntry;
+  } catch (error) {
+    if (error instanceof Error) {
+    }
+    throw error;
+  }
 }
 
 async function sendEntry(body: { body: string }, token: string) {

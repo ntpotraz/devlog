@@ -5,9 +5,10 @@ import type { Entry } from "./utils";
 type LogProps = {
   entries: Entry[];
   deleteEntry: (entry: Entry) => void;
+  onEdit: (entry: Entry) => void;
 };
 
-function Log({ entries, deleteEntry }: LogProps) {
+function Log({ entries, deleteEntry, onEdit }: LogProps) {
   return (
     <div className="flex flex-col gap-6">
       {entries.length === 0 ? (
@@ -17,7 +18,12 @@ function Log({ entries, deleteEntry }: LogProps) {
       ) : (
         <ul className="flex flex-col gap-4">
           {entries.map((entry) => (
-            <EntryItem key={entry.id} entry={entry} deleteEntry={deleteEntry} />
+            <EntryItem
+              key={entry.id}
+              entry={entry}
+              deleteEntry={deleteEntry}
+              onEdit={onEdit}
+            />
           ))}
         </ul>
       )}

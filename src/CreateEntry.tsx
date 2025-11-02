@@ -3,10 +3,16 @@ import { useId, useLayoutEffect, useRef } from "react";
 type CreateEntryProps = {
   entryText: string;
   setEntryText: (text: string) => void;
-  addEntry: () => void;
+  onSubmit: () => void;
+  buttonText: string;
 };
 
-function CreateEntry({ entryText, setEntryText, addEntry }: CreateEntryProps) {
+function CreateEntry({
+  entryText,
+  setEntryText,
+  onSubmit,
+  buttonText,
+}: CreateEntryProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: the `scrollHeight` of the textarea depends on `entryText`
@@ -35,9 +41,9 @@ function CreateEntry({ entryText, setEntryText, addEntry }: CreateEntryProps) {
       <button
         className="devFont self-end rounded-lg border border-orange-400/40 bg-orange-400/10 px-6 py-3 text-xs tracking-[0.45em] text-orange-200 transition hover:border-orange-300/70 hover:bg-orange-400/20 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
         type="submit"
-        onClick={addEntry}
+        onClick={onSubmit}
       >
-        create entry
+        {buttonText}
       </button>
     </div>
   );

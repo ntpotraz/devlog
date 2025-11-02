@@ -9,10 +9,12 @@ import {
   type Entry,
   getUserEntries,
   sendDeleteEntry,
+  updateEntry,
 } from "./utils";
 
 function Homepage() {
-  const [newEntry, setNewEntry] = useState<boolean>(false);
+  // const [newEntry, setNewEntry] = useState<boolean>(false);
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [entryText, setEntryText] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
   const { user, isLoaded } = useUser();
@@ -38,9 +40,9 @@ function Homepage() {
     fetchEntries();
   }, [isLoaded, user, getToken]);
 
-  async function addEntry() {
-    if (entryText === "") {
-      setNewEntry(false);
+  async function handleSubmit() {
+    if (entryText === "" || !editingEntryId) {
+      setEditingEntryId(null);
       return;
     }
     const token = await getToken();
@@ -49,12 +51,19 @@ function Homepage() {
       return;
     }
     try {
-      const entry = await createEntry(entryText, token);
-      setEntries([entry, ...entries]);
+      if (editingEntryId === "new") {
+        const entry = await createEntry(entryText, token);
+        setEntries([entry, ...entries]);
+      } else {
+        const entry = await updateEntry(editingEntryId, entryText, token);
+        setEntries(
+          entries.map((item) => (item.id === editingEntryId ? entry : item)),
+        );
+      }
       setEntryText("");
-      setNewEntry(false);
+      setEditingEntryId(null);
     } catch (error) {
-      console.error("Failed to create entry:", error);
+      console.error("Failed to handle submission:", error);
     }
   }
 
@@ -78,6 +87,12 @@ function Homepage() {
       console.error("Failed to delete:", error);
       setEntries(originalEntries);
     }
+  }
+
+  function onEdit(entry: Entry) {
+    setEditingEntryId(entry.id);
+    setEntryText(entry.body);
+    console.log("editing entry", entry.id);
   }
 
   return (
@@ -126,16 +141,20 @@ function Homepage() {
             <div className="flex flex-col gap-6 rounded-3xl border border-orange-400/30 bg-[#131418]/95 px-6 py-7 shadow-[inset_0_0_20px_rgba(0,0,0,0.4)]">
               <div className="flex items-center justify-between gap-4">
                 <p className="devFont text-[0.8rem] tracking-[0.4em] text-orange-300/70">
-                  {newEntry ? "compose active" : "compose entry"}
+                  {!editingEntryId
+                    ? "compose entry"
+                    : editingEntryId === "new"
+                      ? "compose active"
+                      : "edit active"}
                 </p>
                 <span className="inline-flex h-2.5 w-2.5 rounded-full bg-orange-400 shadow-[0_0_12px_rgba(255,124,45,0.8)]" />
               </div>
-              {!newEntry ? (
+              {!editingEntryId ? (
                 <>
                   <button
                     type="button"
                     className="devFont w-full rounded-xl border border-orange-400/40 bg-orange-400/10 px-6 py-3 text-xs tracking-[0.45em] text-orange-200 transition hover:border-orange-300/70 hover:bg-orange-400/20 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
-                    onClick={() => setNewEntry(true)}
+                    onClick={() => setEditingEntryId("new")}
                   >
                     new entry
                   </button>
@@ -154,9 +173,9 @@ function Homepage() {
                 <button
                   type="button"
                   className="devFont w-full rounded-xl border border-orange-400/40 bg-transparent px-6 py-3 text-xs tracking-[0.45em] text-orange-200 transition hover:border-orange-300/70 hover:bg-orange-400/10 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
-                  onClick={() => setNewEntry(false)}
+                  onClick={() => setEditingEntryId(null)}
                 >
-                  cancel compose
+                  {editingEntryId === "new" ? "cancel compose" : "cancel edit"}
                 </button>
               )}
             </div>
@@ -165,22 +184,33 @@ function Homepage() {
           <main className="min-w-0 px-6 py-8">
             <div className="flex flex-wrap items-center gap-4">
               <p className="devFont text-[0.8rem] tracking-[0.4em] text-orange-300/70">
-                {newEntry ? "compose entry" : "log history"}
+                {!editingEntryId
+                  ? "log history"
+                  : editingEntryId === "new"
+                    ? "compose entry"
+                    : "edit entry"}
               </p>
             </div>
 
             <div className="flex flex-col rounded-2xl px-4 py-6">
-              {newEntry ? (
+              {editingEntryId ? (
                 <div className="flex flex-1 flex-col overflow-y-auto pr-1">
                   <CreateEntry
                     entryText={entryText}
                     setEntryText={setEntryText}
-                    addEntry={addEntry}
+                    onSubmit={handleSubmit}
+                    buttonText={
+                      editingEntryId === "new" ? "create entry" : "commit edit"
+                    }
                   />
                 </div>
               ) : (
                 <div className="flex-1 space-y-4 overflow-y-auto pr-1">
-                  <Log entries={entries} deleteEntry={deleteEntry} />
+                  <Log
+                    entries={entries}
+                    deleteEntry={deleteEntry}
+                    onEdit={onEdit}
+                  />
                 </div>
               )}
             </div>
