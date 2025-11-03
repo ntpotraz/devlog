@@ -45,7 +45,6 @@ function Homepage() {
     }
     const token = await getToken();
     if (!token) {
-      console.error("Not authenticated");
       return;
     }
     try {
@@ -90,7 +89,6 @@ function Homepage() {
   function onEdit(entry: Entry) {
     setEditingEntryId(entry.id);
     setEntryText(entry.body);
-    console.log("editing entry", entry.id);
   }
 
   return (
@@ -183,7 +181,7 @@ function Homepage() {
             </div>
           </aside>
 
-          <main className="min-w-0 px-6 py-8">
+          <main className="min-w-0">
             <div className="flex flex-wrap items-center gap-4">
               <p className="devFont text-[0.8rem] tracking-[0.4em] text-orange-300/70">
                 {!editingEntryId
@@ -194,13 +192,18 @@ function Homepage() {
               </p>
             </div>
 
-            <div className="flex flex-col rounded-2xl px-4 py-6">
+            <div className="flex flex-col rounded-2xl px-0 py-6">
               {editingEntryId ? (
                 <div className="flex flex-1 flex-col overflow-y-auto pr-1">
                   <EntryEditor
+                    key={editingEntryId}
                     entryText={entryText}
                     setEntryText={setEntryText}
                     onSubmit={handleSubmit}
+                    onCancel={() => {
+                      setEntryText("");
+                      setEditingEntryId(null);
+                    }}
                     buttonText={
                       editingEntryId === "new" ? "create entry" : "commit edit"
                     }

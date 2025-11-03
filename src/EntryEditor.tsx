@@ -4,6 +4,7 @@ type EntryEditorProps = {
   entryText: string;
   setEntryText: (text: string) => void;
   onSubmit: () => void;
+  onCancel: () => void;
   buttonText: string;
 };
 
@@ -11,9 +12,11 @@ function EntryEditor({
   entryText,
   setEntryText,
   onSubmit,
+  onCancel,
   buttonText,
 }: EntryEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const startTextRef = useRef(entryText);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: the `scrollHeight` of the textarea depends on `entryText`
   useLayoutEffect(() => {
@@ -41,7 +44,13 @@ function EntryEditor({
       <button
         className="devFont self-end rounded-lg border border-orange-400/40 bg-orange-400/10 px-6 py-3 text-xs tracking-[0.45em] text-orange-200 transition hover:border-orange-300/70 hover:bg-orange-400/20 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
         type="submit"
-        onClick={onSubmit}
+        onClick={() => {
+          if (entryText === startTextRef.current) {
+            onCancel();
+            return;
+          }
+          onSubmit();
+        }}
       >
         {buttonText}
       </button>

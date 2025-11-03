@@ -16,15 +16,15 @@ function EntryItem({ entry, deleteEntry, onEdit }: EntryProps) {
   const updatedDateFormat = `${updatedDate.toLocaleDateString()}, ${updatedDate.toLocaleTimeString()}`;
 
   return (
-    <li className="group rounded-2xl border border-orange-400/25 bg-[#111217]/85 px-6 py-6 shadow-[inset_0_1px_0_rgba(255,124,45,0.08)] transition hover:border-orange-300/40 hover:shadow-[0_0_35px_rgba(255,124,45,0.15)]">
+    <li className="group rounded-2xl border border-orange-400/25 bg-[#111217]/85 px-2 py-2 md:px-6 md:py-6 shadow-[inset_0_1px_0_rgba(255,124,45,0.08)] transition hover:border-orange-300/40 hover:shadow-[0_0_35px_rgba(255,124,45,0.15)]">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <p className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
+          <p className="devFont select-none text-[11px] tracking-[0.45em] text-orange-200/80">
             {dateFormat}
             {hasUpdated && (
               <>
                 <br />
-                <em className="devFont text-[11px] tracking-[0.45em] text-orange-200/80">
+                <em className="devFont hidden sm:block text-[11px] tracking-[0.45em] text-orange-200/80">
                   edited {updatedDateFormat}
                 </em>
               </>
