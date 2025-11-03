@@ -19,12 +19,12 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 type Entry struct {
-	Id        uuid.UUID `json:"id"`
-	UserID    string    `json:"userID"`
-	Body      string    `json:"body"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	IsDeleted bool      `json:"isDeleted"`
+	Id        string `json:"id"`
+	UserID    string `json:"userID"`
+	Body      string `json:"body"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	IsDeleted int64  `json:"isDeleted"`
 }
 
 func getEntryStruct(body io.ReadCloser) Entry {
@@ -64,15 +64,15 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 
 	entryStruct := getEntryStruct(r.Body)
 
-	entryID := uuid.New()
-	now := time.Now().UTC()
+	entryID := uuid.New().String()
+	now := time.Now().UTC().Format(time.DateTime)
 
 	entryParams := database.CreateEntryParams{
-		ID:        entryID.String(),
+		ID:        entryID,
 		Userid:    user.ID,
 		Body:      entryStruct.Body,
-		Createdat: now.Format(time.DateTime),
-		Updatedat: now.Format(time.DateTime),
+		Createdat: now,
+		Updatedat: now,
 		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), entryParams); err != nil {
@@ -87,7 +87,7 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 		Body:      entryStruct.Body,
 		CreatedAt: now,
 		UpdatedAt: now,
-		IsDeleted: false,
+		IsDeleted: 0,
 	}
 
 	respondWithJSON(w, http.StatusCreated, resEntry)
@@ -102,7 +102,7 @@ func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) 
 	}
 	entryStruct := getEntryStruct(r.Body)
 
-	entry, err := cfg.DB.GetEntry(r.Context(), entryStruct.Id.String())
+	entry, err := cfg.DB.GetEntry(r.Context(), entryStruct.Id)
 	if err != nil {
 		log.Printf("Error fetching entry: %v", err)
 		http.Error(w, "Entry not found", http.StatusNotFound)
@@ -116,7 +116,7 @@ func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) 
 	}
 
 	deleteParams := database.DeleteEntryParams{
-		ID:        entryStruct.Id.String(),
+		ID:        entryStruct.Id,
 		Updatedat: time.Now().UTC().Format(time.DateTime),
 		Isdeleted: 1,
 	}
@@ -166,11 +166,11 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 		}
 
 		entries = append(entries, Entry{
-			Id:        dbID,
+			Id:        dbID.String(),
 			UserID:    dbEntry.Userid,
 			Body:      dbEntry.Body,
-			CreatedAt: dbCreatedAt,
-			UpdatedAt: dbUpdatedAt,
+			CreatedAt: dbCreatedAt.Local().Format(time.DateTime),
+			UpdatedAt: dbUpdatedAt.Local().Format(time.DateTime),
 		})
 	}
 
@@ -200,15 +200,15 @@ func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) 
 
 	entryStruct := getEntryStruct(r.Body)
 
-	entryID := uuid.New()
-	updatedAt := time.Now().UTC()
+	entryID := uuid.New().String()
+	updatedAt := time.Now().UTC().Format(time.DateTime)
 
 	updateParams := database.CreateEntryParams{
-		ID:        entryID.String(),
+		ID:        entryID,
 		Userid:    user.ID,
 		Body:      entryStruct.Body,
 		Createdat: entry.Createdat,
-		Updatedat: updatedAt.Format(time.DateTime),
+		Updatedat: updatedAt,
 		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), updateParams); err != nil {
@@ -217,14 +217,9 @@ func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	createdAt, err := time.Parse(time.DateTime, entry.Createdat)
-	if err != nil {
-		log.Printf("invalid Createdtime: %v", err)
-	}
-
 	deleteParams := database.DeleteEntryParams{
 		ID:        id,
-		Updatedat: updatedAt.Format(time.DateTime),
+		Updatedat: updatedAt,
 		Isdeleted: 1,
 	}
 
@@ -236,9 +231,38 @@ func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) 
 		Id:        entryID,
 		UserID:    user.ID,
 		Body:      entryStruct.Body,
-		CreatedAt: createdAt,
+		CreatedAt: entry.Createdat,
 		UpdatedAt: updatedAt,
-		IsDeleted: false,
+	}
+
+	respondWithJSON(w, http.StatusOK, resEntry)
+}
+
+func (cfg *apiConfig) handleGetPublicEntry(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	entry, err := cfg.DB.GetEntry(r.Context(), id)
+	if err != nil {
+		log.Printf("Error fetching entry: %v", err)
+		http.Error(w, "Entry not found", http.StatusNotFound)
+		return
+	}
+
+	dbCreatedAt, err := time.Parse(time.DateTime, entry.Createdat)
+	if err != nil {
+		log.Printf("invalid Createdtime: %v", err)
+	}
+	dbUpdatedAt, err := time.Parse(time.DateTime, entry.Updatedat)
+	if err != nil {
+		log.Printf("invalid Updatetime: %v", err)
+	}
+
+	resEntry := Entry{
+		Id:        entry.ID,
+		UserID:    entry.Userid,
+		Body:      entry.Body,
+		CreatedAt: dbCreatedAt.Local().Format(time.DateTime),
+		UpdatedAt: dbUpdatedAt.Local().Format(time.DateTime),
+		IsDeleted: entry.Isdeleted,
 	}
 
 	respondWithJSON(w, http.StatusOK, resEntry)

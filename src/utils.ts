@@ -1,8 +1,10 @@
 export type Entry = {
   id: string;
+  userID: string;
   body: string;
   createdAt: string;
   updatedAt: string;
+  isDeleted: 0 | 1;
 };
 
 export async function createEntry(entryText: string, token: string) {
@@ -111,5 +113,27 @@ export async function getUserEntries(token: string) {
       console.log(`Error: ${error.message}`);
     }
     return [] as Entry[];
+  }
+}
+
+export async function getPublicEntry(id: string): Promise<Entry | null> {
+  try {
+    const res = await fetch(`/api/entries/${id}`, {
+      method: "GET",
+    });
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      const data = await res.json();
+      throw new Error(`Failed to fetch entry: ${data}`);
+    }
+    const entry: Entry = await res.json();
+    return entry;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
+    }
+    return null;
   }
 }

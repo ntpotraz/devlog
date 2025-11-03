@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/clerk/clerk-sdk-go/v2"
 	clerkhttp "github.com/clerk/clerk-sdk-go/v2/http"
@@ -57,8 +58,7 @@ func main() {
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir(dist))
 
-	mux.Handle("/", fileServer)
-	mux.HandleFunc("/health", handleHealthCheck)
+	mux.HandleFunc("GET /api/entries/{id}", apiCfg.handleGetPublicEntry)
 	mux.HandleFunc("POST /api/entries", func(w http.ResponseWriter, r *http.Request) {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleAddEntry))
 		handler.ServeHTTP(w, r)
@@ -67,7 +67,6 @@ func main() {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleDeleteEntry))
 		handler.ServeHTTP(w, r)
 	})
-	// mux.HandleFunc("GET /api/entries", apiCfg.handleGetUserEntries)
 	mux.HandleFunc("GET /api/entries", func(w http.ResponseWriter, r *http.Request) {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleGetUserEntries))
 		handler.ServeHTTP(w, r)
@@ -76,6 +75,18 @@ func main() {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(apiCfg.handleUpdateEntry))
 		handler.ServeHTTP(w, r)
 	})
+	mux.HandleFunc("/health", handleHealthCheck)
+
+	spaHandler := func(w http.ResponseWriter, r *http.Request) {
+		path := filepath.Join(dist, filepath.Clean(r.URL.Path))
+		if info, err := os.Stat(path); err == nil && !info.IsDir() && r.URL.Path != "/" {
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+		indexPath := filepath.Join(dist, "index.html")
+		http.ServeFile(w, r, indexPath)
+	}
+	mux.HandleFunc("/", spaHandler)
 
 	server := http.Server{
 		Addr:    ":" + port,

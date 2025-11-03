@@ -6,9 +6,10 @@ type LogProps = {
   entries: Entry[];
   deleteEntry: (entry: Entry) => void;
   onEdit: (entry: Entry) => void;
+  onCopyURL: (id: string) => void;
 };
 
-function Log({ entries, deleteEntry, onEdit }: LogProps) {
+function Log({ entries, deleteEntry, onEdit, onCopyURL }: LogProps) {
   return (
     <div className="flex flex-col gap-6">
       {entries.length === 0 ? (
@@ -23,6 +24,7 @@ function Log({ entries, deleteEntry, onEdit }: LogProps) {
               entry={entry}
               deleteEntry={deleteEntry}
               onEdit={onEdit}
+              onCopyURL={onCopyURL}
             />
           ))}
         </ul>
