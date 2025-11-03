@@ -31,7 +31,7 @@ func getEntryStruct(body io.ReadCloser) Entry {
 	var entryStruct Entry
 
 	if err := json.NewDecoder(body).Decode(&entryStruct); err != nil {
-		log.Fatalf("Error decoding: %v", err)
+		log.Printf("Error decoding: %v", err)
 		return Entry{}
 	}
 
@@ -76,7 +76,7 @@ func (cfg *apiConfig) handleAddEntry(w http.ResponseWriter, r *http.Request) {
 		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), entryParams); err != nil {
-		log.Fatalf("Entry could not be created: %v", err)
+		log.Printf("Entry could not be created: %v", err)
 		http.Error(w, "Failed to create entry", http.StatusInternalServerError)
 		return
 	}
@@ -122,7 +122,9 @@ func (cfg *apiConfig) handleDeleteEntry(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := cfg.DB.DeleteEntry(r.Context(), deleteParams); err != nil {
-		log.Fatalf("Entry could not be deleted: %v", err)
+		log.Printf("Entry could not be deleted: %v", err)
+		http.Error(w, "Failed to delete entry", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -151,16 +153,16 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 	for _, dbEntry := range dbEntries {
 		dbID, err := uuid.Parse(dbEntry.ID)
 		if err != nil {
-			log.Fatalf("invalid userid: %v", err)
+			log.Printf("invalid userid: %v", err)
 		}
 
 		dbCreatedAt, err := time.Parse(time.DateTime, dbEntry.Createdat)
 		if err != nil {
-			log.Fatalf("invalid Createdtime: %v", err)
+			log.Printf("invalid Createdtime: %v", err)
 		}
 		dbUpdatedAt, err := time.Parse(time.DateTime, dbEntry.Updatedat)
 		if err != nil {
-			log.Fatalf("invalid Updatetime: %v", err)
+			log.Printf("invalid Updatetime: %v", err)
 		}
 
 		entries = append(entries, Entry{
@@ -172,7 +174,6 @@ func (cfg *apiConfig) handleGetUserEntries(w http.ResponseWriter, r *http.Reques
 		})
 	}
 
-	log.Println(entries)
 	respondWithJSON(w, http.StatusOK, entries)
 }
 
@@ -211,14 +212,14 @@ func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) 
 		Isdeleted: 0,
 	}
 	if err := cfg.DB.CreateEntry(r.Context(), updateParams); err != nil {
-		log.Fatalf("Entry could not be updated: %v", err)
+		log.Printf("Entry could not be updated: %v", err)
 		http.Error(w, "Failed to update entry", http.StatusInternalServerError)
 		return
 	}
 
 	createdAt, err := time.Parse(time.DateTime, entry.Createdat)
 	if err != nil {
-		log.Fatalf("invalid Createdtime: %v", err)
+		log.Printf("invalid Createdtime: %v", err)
 	}
 
 	deleteParams := database.DeleteEntryParams{
@@ -228,7 +229,7 @@ func (cfg *apiConfig) handleUpdateEntry(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := cfg.DB.DeleteEntry(r.Context(), deleteParams); err != nil {
-		log.Fatalf("Entry could not be deleted: %v", err)
+		log.Printf("Entry could not be deleted: %v", err)
 	}
 
 	resEntry := Entry{
