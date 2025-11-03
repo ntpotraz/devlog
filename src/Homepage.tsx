@@ -1,5 +1,6 @@
 import { UserButton, useAuth, useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast, Zoom } from "react-toastify";
 import Devlog from "./Devlog";
 import EntryEditor from "./EntryEditor";
 import Log from "./Log";
@@ -91,8 +92,26 @@ function Homepage() {
     setEntryText(entry.body);
   }
 
+  function onCopyURL(id: string) {
+    const url = `${window.location.origin}/entry/${id}`;
+    navigator.clipboard.writeText(url);
+    toast.info("url copied to clipboard", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      icon: false,
+      theme: "dark",
+      transition: Zoom,
+    });
+  }
+
   return (
     <section className="relative overflow-hidden rounded-[30px] border border-orange-400/35 bg-[#0d0e12]/95 shadow-[0_28px_120px_rgba(0,0,0,0.78)]">
+      <ToastContainer toastClassName="devFont text-[0.8rem] tracking-[0.4em] text-orange-300/70 border border-orange-400/30 rounded-lg p-2" />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,124,45,0.16),transparent_66%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(150deg,rgba(255,122,24,0.08),transparent_60%)]" />
@@ -215,6 +234,7 @@ function Homepage() {
                     entries={entries}
                     deleteEntry={deleteEntry}
                     onEdit={onEdit}
+                    onCopyURL={onCopyURL}
                   />
                 </div>
               )}

@@ -6,9 +6,10 @@ type EntryProps = {
   entry: Entry;
   deleteEntry: (entry: Entry) => void;
   onEdit: (entry: Entry) => void;
+  onCopyURL: (id: string) => void;
 };
 
-function EntryItem({ entry, deleteEntry, onEdit }: EntryProps) {
+function EntryItem({ entry, deleteEntry, onEdit, onCopyURL }: EntryProps) {
   const date = new Date(entry.createdAt);
   const hasUpdated = entry.createdAt !== entry.updatedAt;
   const dateFormat = `${date.toLocaleDateString()}, ${date.toLocaleTimeString()}`;
@@ -31,6 +32,22 @@ function EntryItem({ entry, deleteEntry, onEdit }: EntryProps) {
             )}
           </p>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 tracking-[0.45em] transition hover:border-purple-600 hover:bg-purple-700/10  focus:outline-none focus:ring-2 focus:ring-purple-400/45"
+              onClick={() => onCopyURL(entry.id)}
+            >
+              <svg
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <title>copy url</title>
+                <path d="M20.56 3.34a1 1 0 0 0-1-.08l-17 8a1 1 0 0 0-.57.92a1 1 0 0 0 .6.9L8 15.45v6.72L13.84 18l4.76 2.08a.9.9 0 0 0 .4.09a1 1 0 0 0 .52-.15a1 1 0 0 0 .48-.79l1-15a1 1 0 0 0-.44-.89M18.1 17.68l-5.27-2.31L16 9.17l-7.65 4.25l-2.93-1.29l13.47-6.34Z" />
+              </svg>
+            </button>
             <button
               type="button"
               className="devFont inline-flex items-center gap-2 self-start rounded-md border border-orange-400/35 bg-transparent px-3 py-2 tracking-[0.45em] transition hover:border-blue-600 hover:bg-blue-700/10  focus:outline-none focus:ring-2 focus:ring-blue-400/45"
