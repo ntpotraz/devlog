@@ -1,75 +1,16 @@
-# React + TypeScript + Vite
+# Devlog
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+*A minimal site for journaling*
 
-Currently, two official plugins are available:
+## Purpose
+Devlog is a journaling app for quickly creating and sharing markdown supported text. What sets Devlog apart from other blog-like sites is that it supports non-destructable journal entries. What I mean by this is that every version of an entry is saved and sharable as long as you have the link to said version of the post. This idea started out from frustration that any avid tech user has experienced. Imagine the scenario where you have a very specific and niche computer problem that you're trying to solve. You do a Google search and append 'Reddit' at the end of your query. You find a single post from 10 years ago that describes the exact issue that you have, and you're met with the top comment **[deleted]** with every reply being along the line of "Omg thank you so much!". Devlog solves this by ensuring that as long as a link to the post exists, it cannot be modified or deleted. Users are able to edit and delete their own posts, and these effects will persist on their own homepage, but the old post would still be accessible as long as someone has a link to it. This ensures that any post that contains valuable information that's being shared will always be allowed to be shared regardless of what the original poster decides to do with it. Devlog is not for private journaling, every entry should be made under the assumption that it will be viewable by anybody. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+1. A very minimal layout. Create, share, edit, and delete posts all within a single button click.
+2. Markdown editor
+3. One link sharing. Any post is sharable by copying its link. Links persist as they are even after the original post has been edited or deleted
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## To-Do
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Profile view - The ability to view all the posts of another user
