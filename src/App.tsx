@@ -42,7 +42,7 @@ function App() {
                         <p className="max-w-xl text-balance font-mono text-sm leading-relaxed text-orange-100/80">
                           Welcome to devlog
                         </p>
-                        <SignInButton>
+                        <SignInButton mode="modal">
                           <button
                             type="button"
                             className="devFont inline-flex items-center gap-4 self-start rounded-xl border border-orange-400/60 bg-orange-400/10 px-10 py-4 text-sm uppercase tracking-[0.4em] text-orange-200 transition hover:bg-orange-400/20 hover:text-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
